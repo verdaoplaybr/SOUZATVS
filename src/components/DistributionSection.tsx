@@ -1,7 +1,11 @@
+import { useState } from 'react';
+
 export function DistributionSection() {
+  const [skin, setSkin] = useState('palmeiras');
+
   const gerarLinkTesteWeb = () => {
     const idAleatorio = "WEB_" + Math.floor(100000 + Math.random() * 900000);
-    const linkFinal = `https://souzastvs.github.io/arena/teste.html?deviceId=${idAleatorio}`;
+    const linkFinal = `https://souzastvs.github.io/teste.html?time=${skin}&deviceId=${idAleatorio}`;
     navigator.clipboard.writeText(linkFinal);
     alert("Link de Teste Web gerado e copiado! É só colar no WhatsApp do cliente:\n\n" + linkFinal);
   };
@@ -35,6 +39,14 @@ export function DistributionSection() {
         <div className="bg-[#22293A] border border-dashed border-[#38BDF8] rounded-xl p-6 text-center">
           <h3 className="text-white font-bold mb-2">🔗 Link de Teste Web</h3>
           <p className="text-gray-400 text-sm mb-4">Teste direto no navegador.</p>
+          <select 
+            value={skin} 
+            onChange={(e) => setSkin(e.target.value)}
+            className="w-full bg-[#0B0E14] border border-[#2A3142] p-2 rounded text-white mb-3"
+          >
+            <option value="palmeiras">Skin Verdão</option>
+            <option value="corinthians">Skin Timão</option>
+          </select>
           <button onClick={gerarLinkTesteWeb} className="w-full bg-[#38BDF8] hover:bg-[#0ea5e9] text-black font-bold py-2 rounded transition">
             Gerar Link
           </button>
@@ -43,3 +55,4 @@ export function DistributionSection() {
     </div>
   );
 }
+
