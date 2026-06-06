@@ -30,6 +30,15 @@ async function startServer() {
     { id: "2", nome: "Thiago Alvinegro", deviceId: "BOX_TESTE_TIMAO", status: "premium", skin: "corinthians", canalAtual: "Nenhum", vencimento: new Date(Date.now() + 5*24*60*60*1000).toISOString(), usuarioPoliex: "TESTEGRATIS", senhaPoliex: "11949988411" }
   ];
 
+  // ENDPOINT: Handshake simples para validação do device
+  app.get('/api/auth/handshake', (req, res) => {
+    const { deviceId } = req.query;
+    if (!deviceId) return res.status(400).send("DeviceId nao fornecido.");
+    const cliente = baseClientes.find(c => c.deviceId === deviceId);
+    if (!cliente) return res.status(404).send("Dispositivo nao cadastrado.");
+    res.json({ success: true, nome: cliente.nome, status: cliente.status });
+  });
+
   // 1. ROTA DE TELEMETRIA: A TV avisa o painel o que o cliente está a ver
   app.post('/api/telemetria/ping', (req, res) => {
     const { deviceId, canalAtual } = req.body;
