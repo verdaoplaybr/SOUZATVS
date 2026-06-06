@@ -46,6 +46,8 @@ export function DistributionSection() {
           >
             <option value="palmeiras">Skin Verdão</option>
             <option value="corinthians">Skin Timão</option>
+            <option value="benfica">Skin Benfica</option>
+            <option value="barcelona">Skin Barcelona</option>
           </select>
           <button onClick={gerarLinkTesteWeb} className="w-full bg-[#38BDF8] hover:bg-[#0ea5e9] text-black font-bold py-2 rounded transition">
             Gerar Link
