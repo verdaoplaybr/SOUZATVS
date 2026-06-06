@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { fileURLToPath } from "url";
 import { CanalIPTV } from "./src/types";
@@ -19,75 +20,70 @@ function obterCanaisPorEmissora(anais: CanalIPTV[], emissoraSelecionada: string)
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
-
+  
+  app.use(cors());
   app.use(express.json());
 
-  // "Base de dados" (simulada para este exemplo, futuramente PostgreSQL)
-  let tabelaClientes = [
-      {
-          id: "1",
-          nome: "Cliente Palmeirense VIP",
-          deviceId: "BOX_TESTE_VERDAO",
-          status: "teste",
-          skin: "palmeiras",
-          canalAtual: "Nenhum",
-          vencimento: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-          usuarioPoliex: "TESTEGRATIS",
-          senhaPoliex: "11949988411"
-      },
-      {
-          id: "2",
-          nome: "Cliente Corinthiano VIP",
-          deviceId: "BOX_TESTE_TIMAO",
-          status: "premium",
-          skin: "corinthians",
-          canalAtual: "Nenhum",
-          vencimento: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          usuarioPoliex: "TESTEGRATIS",
-          senhaPoliex: "11949988411"
-      }
+  // Banco de dados em memória
+  let baseClientes = [
+    { id: "1", nome: "Marcos Palmeirense", deviceId: "BOX_TESTE_VERDAO", status: "teste", skin: "palmeiras", canalAtual: "Nenhum", vencimento: new Date(Date.now() + 4*60*60*1000).toISOString(), usuarioPoliex: "TESTEGRATIS", senhaPoliex: "11949988411" },
+    { id: "2", nome: "Thiago Alvinegro", deviceId: "BOX_TESTE_TIMAO", status: "premium", skin: "corinthians", canalAtual: "Nenhum", vencimento: new Date(Date.now() + 5*24*60*60*1000).toISOString(), usuarioPoliex: "TESTEGRATIS", senhaPoliex: "11949988411" }
   ];
 
-  // ENDPOINT: Handshake simples para validação do device
-  app.get('/api/auth/handshake', (req, res) => {
-    const { deviceId } = req.query;
-    if (!deviceId) return res.status(400).send("DeviceId nao fornecido.");
-    const cliente = tabelaClientes.find(c => c.deviceId === deviceId);
-    if (!cliente) return res.status(404).send("Dispositivo nao cadastrado.");
-    res.json({ success: true, nome: cliente.nome, status: cliente.status });
-  });
-
-  // ENDPOINT 1: A TV Box avisa o painel o que o cliente está assistindo (Telemetria)
+  // 1. ROTA DE TELEMETRIA: A TV avisa o painel o que o cliente está a ver
   app.post('/api/telemetria/ping', (req, res) => {
-      const { deviceId, canalAtual } = req.body;
-      
-      let cliente = tabelaClientes.find(c => c.deviceId === deviceId);
-      if (cliente) {
-          cliente.canalAtual = canalAtual; // Atualiza o canal na mesma hora no painel
-          return res.json({ success: true, status: cliente.status, skin: cliente.skin });
-      }
-      
-      res.status(404).json({ error: "Dispositivo não encontrado" });
+    const { deviceId, canalAtual } = req.body;
+    let cliente = baseClientes.find(c => c.deviceId === deviceId);
+    if (cliente) {
+        cliente.canalAtual = canalAtual;
+        return res.json({ success: true, skin: cliente.skin, status: cliente.status });
+    }
+    res.status(404).json({ success: false, message: "Aparelho não cadastrado" });
   });
 
-  // ENDPOINT 2: Retorna a lista de clientes atualizada para o painel de controle
+  // 2. ROTA ADMIN: API que alimenta a Tabela
   app.get('/api/admin/clientes', (req, res) => {
-      res.json(tabelaClientes);
+      res.json(baseClientes);
   });
 
-  // ENDPOINT 3: Altera a Skin do time ou plano direto pelo Admin
-  app.put('/api/admin/editar-cliente', (req, res) => {
-      const { deviceId, novaSkin, novoStatus, novosDias } = req.body;
-      let cliente = tabelaClientes.find(c => c.deviceId === deviceId);
-      if (cliente) {
-          if (novaSkin) cliente.skin = novaSkin;
-          if (novoStatus) cliente.status = novoStatus;
-          return res.json({ success: true, message: "Cliente atualizado!" });
-      }
-      res.status(404).json({ error: "Erro ao atualizar" });
+  // 3. ROTA ADMIN: Cadastrar ou Modificar Skin/Plano remotamente
+  app.post('/api/admin/cadastrar', (req, res) => {
+    const { nome, deviceId, skin } = req.body;
+    const novoCliente = {
+        id: String(baseClientes.length + 1),
+        nome: nome || "Novo Cliente Box",
+        deviceId: deviceId,
+        status: "teste",
+        skin: skin || "palmeiras",
+        canalAtual: "Nenhum",
+        vencimento: new Date(Date.now() + 4*60*60*1000).toISOString(),
+        usuarioPoliex: "TESTEGRATIS",
+        senhaPoliex: "11949988411"
+    };
+    baseClientes.push(novoCliente);
+    res.json({ success: true, message: "Dispositivo ativado remotamente!" });
   });
 
+  // 4. ROTA DE STREAMING "ZERO HACKER" (MASCARADA)
+  app.get('/stream/:idCanal', (req, res) => {
+    const { idCanal } = req.params;
+    const { deviceId } = req.query;
+
+    const cliente = baseClientes.find(c => c.deviceId === deviceId);
+    if (!cliente || cliente.status === "expirado") {
+        return res.status(403).send("Acesso Expirado. Efetue o pagamento via PIX.");
+    }
+
+    // Monta a URL da Poliex de forma dinâmica usando as credenciais do ambiente
+    const user = process.env.POLIEX_USER || cliente.usuarioPoliex;
+    const pass = process.env.POLIEX_PASS || cliente.senhaPoliex;
+    const urlFinalM3U8 = `https://poliex.org/api/v1/stream/${idCanal}.m3u8?user=${user}&pass=${pass}`;
+    
+    // Roteia o sinal diretamente para o player da TV Box
+    res.redirect(urlFinalM3U8);
+  });
+
+  // (rest of the endpoints)
   app.get("/api/canais", (req, res) => {
     const emissora = req.query.emissora as string;
     if (emissora) {
@@ -95,40 +91,6 @@ async function startServer() {
     } else {
       res.json(todosOsCanais);
     }
-  });
-
-  // Roteia o sinal para o player (Mascarador de Links)
-  app.get('/stream/:idCanal', (req, res) => {
-    const { idCanal } = req.params;
-    const { deviceId } = req.query;
-
-    if (!deviceId) {
-        return res.status(400).send("DeviceId nao fornecido.");
-    }
-
-    // 1. Busca o cliente no nosso banco de dados pelo ID do aparelho
-    const cliente = tabelaClientes.find(c => c.deviceId === deviceId);
-
-    if (!cliente) {
-        return res.status(404).send("Dispositivo nao cadastrado no painel.");
-    }
-
-    // 2. Verifica se o tempo de acesso expirou
-    const agora = new Date();
-    const dataVencimento = new Date(cliente.vencimento);
-
-    if (agora > dataVencimento || cliente.status === "expirado") {
-        cliente.status = "expirado";
-        return res.status(403).send("Acesso Expirado.");
-    }
-
-    // 3. Monta a URL da Poliex de forma dinâmica usando as credenciais do ambiente
-    const user = process.env.POLIEX_USER || cliente.usuarioPoliex;
-    const pass = process.env.POLIEX_PASS || cliente.senhaPoliex;
-    const urlFinalM3U8 = `https://poliex.org/api/v1/stream/${idCanal}.m3u8?user=${user}&pass=${pass}`;
-    
-    // Roteia o sinal diretamente para o player da TV Box
-    res.redirect(urlFinalM3U8);
   });
 
   if (process.env.NODE_ENV !== "production") {
@@ -145,8 +107,9 @@ async function startServer() {
     });
   }
 
+  const PORT = 3000;
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
   });
 }
 
