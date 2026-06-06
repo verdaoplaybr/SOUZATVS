@@ -54,12 +54,11 @@
             <div class="sub">Adicione credenciais. Elas serão salvas de forma permanente.</div>
             
             <div class="secao-painel">
-                <h2>🔑 Gerar Nova Credencial Comercial</h2>
+                <h2 style="margin-top:0;">🔑 Gerar Nova Credencial Comercial (DNS Integrado)</h2>
                 <div class="grid-formulario">
                     <input type="text" id="cad-nome" placeholder="Nome do Cliente">
                     <input type="text" id="cad-user" placeholder="Usuário">
                     <input type="text" id="cad-pass" placeholder="Senha">
-                    <input type="text" id="cad-stream" placeholder="Link M3U8 do Canal Real (Poliex)">
                     <select id="cad-skin">
                         <option value="neutro">🔮 Tema Padrão (Roxo)</option>
                         <option value="benfica">🇵🇹 Skin Benfica</option>
@@ -68,7 +67,7 @@
                         <option value="corinthians">🇧🇷 Skin Corinthians</option>
                     </select>
                 </div>
-                <button class="btn-acao" onclick="adicionarClienteBanco()">Salvar no Supabase e Gerar Link</button>
+                <button class="btn-acao" onclick="adicionarClienteBanco()">Salvar Credencial e Gerar Acesso</button>
             </div>
 
             <div class="secao-painel">
@@ -112,10 +111,10 @@
             const nome = document.getElementById('cad-nome').value;
             const username = document.getElementById('cad-user').value;
             const password = document.getElementById('cad-pass').value;
-            const stream_url = document.getElementById('cad-stream').value;
             const skin = document.getElementById('cad-skin').value;
+            const stream_url = 'https://default-stream-url.com/stream.m3u8'; // Default stream URL
 
-            if(!nome || !username || !password || !stream_url) { alert("Preencha todos os campos!"); return; }
+            if(!nome || !username || !password) { alert("Preencha todos os campos!"); return; }
 
             // Insere a linha direto na tabela 'clientes_iptv' criada por você
             const { data, error } = await supabaseClient
@@ -134,7 +133,6 @@
                 document.getElementById('cad-nome').value = "";
                 document.getElementById('cad-user').value = "";
                 document.getElementById('cad-pass').value = "";
-                document.getElementById('cad-stream').value = "";
                 
                 listarClientes();
             }
