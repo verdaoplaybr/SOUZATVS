@@ -3,107 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arena Play - Streaming</title>
+    <title>SOUZASTVS - Play Premium</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    
     <style>
-        :root {
-            --cor-time: #7C3AED;
-            --bg-time: #0B0E14;
-        }
-
-        body {
-            background-color: var(--bg-time);
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            transition: background 0.5s ease;
-        }
-
-        .header { margin-bottom: 20px; text-align: center; }
-
-        .header h1 { 
-            color: var(--cor-time); 
-            font-size: 26px; 
-            margin: 0; 
-            letter-spacing: 2px; 
-            font-weight: bold;
-        }
-
-        .header p { color: #94A3B8; margin: 5px 0 0 0; font-size: 14px; }
+        :root { --cor-time: #7C3AED; --bg-time: #0B0E14; --borda-time: rgba(124, 92, 237, 0.5); }
+        body { background-color: var(--bg-time); color: white; font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; transition: 0.5s; }
         
-        .player-container {
-            width: 90%;
-            max-width: 800px;
-            border: 3px solid var(--cor-time);
-            box-shadow: 0 0 25px var(--cor-time);
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: #000;
-        }
+        /* TELA DE LOGIN CASO ABRA SEM PARÂMETROS */
+        .login-box { background: #1A1F2C; padding: 30px; border-radius: 12px; border: 1px solid #2A3142; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box h2 { color: #7C3AED; margin-top: 0; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; background: #0B0E14; border: 1px solid #2A3142; border-radius: 6px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-login { width: 100%; padding: 12px; background: #7C3AED; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
 
+        /* AREA DO PLAYER */
+        .player-container { display: none; width: 90%; max-width: 800px; border: 3px solid var(--cor-time); box-shadow: 0 0 25px var(--borda-time); border-radius: 12px; overflow: hidden; background-color: #000; }
         .video-js { width: 100% !important; height: 450px !important; }
+        .header { text-align: center; margin-bottom: 20px; display: none; }
+        .header h1 { color: var(--cor-time); font-size: 26px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1 id="titulo-time">ARENA PLAY • STREAMING</h1>
-        <p>Aproveite o seu sinal de teste exclusivo</p>
+    <div class="login-box" id="box-login">
+        <h2>SOUZASTVS PLAY</h2>
+        <p style="color:#94A3B8; font-size:13px; margin-bottom:20px;">Insira suas credenciais de autorização</p>
+        <input type="text" id="iptv-user" placeholder="Usuário">
+        <input type="password" id="iptv-pass" placeholder="Senha">
+        <button class="btn-login" onclick="autenticarManual()">Entrar no Sinal</button>
     </div>
 
-    <div class="player-container">
+    <div class="header" id="player-header">
+        <h1 id="titulo-time">ARENA PLAY • STREAMING</h1>
+        <p style="color:#94A3B8; margin-top:5px; font-size:13px;">Conexão Segura e Autorizada</p>
+    </div>
+
+    <div class="player-container" id="player-wrapper">
         <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto">
+            <source src="https://SOUZASTVS.github.io/stream/sbt-sp" type="application/x-mpegURL">
         </video>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const timeEscolhido = urlParams.get('time');
-        const deviceId = urlParams.get('deviceId');
+        let user = urlParams.get('user');
+        let pass = urlParams.get('pass');
+        let time = urlParams.get('time') || 'neutro';
 
-        const root = document.documentElement;
-        const titulo = document.getElementById('titulo-time');
+        // Banco de Dados Simulado de validação rápida local (AI Studio sincroniza aqui depois)
+        const usuariosValidos = {
+            "lisboa88": { pass: "123", skin: "benfica" },
+            "barca10": { pass: "456", skin: "barcelona" }
+        };
 
-        if (timeEscolhido === 'palmeiras') {
-            root.style.setProperty('--cor-time', '#006437');
-            root.style.setProperty('--bg-time', '#021E12');
-            titulo.innerText = "VERDÃO PLAY • AO VIVO";
-        } 
-        else if (timeEscolhido === 'corinthians') {
-            root.style.setProperty('--cor-time', '#FFFFFF');
-            root.style.setProperty('--bg-time', '#111111');
-            titulo.innerText = "TIMÃO PLAY • AO VIVO";
-        }
-        else if (timeEscolhido === 'benfica') {
-            root.style.setProperty('--cor-time', '#FF0000');
-            root.style.setProperty('--bg-time', '#1A0000');
-            titulo.innerText = "BENFICA PLAY • AO VIVO";
-        }
-        else if (timeEscolhido === 'barcelona') {
-            root.style.setProperty('--cor-time', '#A50044');
-            root.style.setProperty('--bg-time', '#001A33');
-            titulo.innerText = "BARÇA PLAY • AO VIVO";
+        const skins = {
+            palmeiras: { cor: '#006437', bg: '#021E12', borda: 'rgba(0,100,55,0.7)', nome: 'Verdão Play' },
+            corinthians: { cor: '#FFFFFF', bg: '#111111', borda: 'rgba(255,255,255,0.4)', nome: 'Timão Play' },
+            benfica: { cor: '#E30613', bg: '#1C0002', borda: 'rgba(227,6,19,0.7)', nome: 'Benfica Play VIP' },
+            barcelona: { cor: '#EDBB00', bg: '#004D98', borda: 'rgba(165,0,68,0.8)', nome: 'Barça Stream Premium' },
+            neutro: { cor: '#7C3AED', bg: '#0B0E14', borda: 'rgba(124,92,237,0.5)', nome: 'SOUZASTVS PLAY' }
+        };
+
+        // Verifica se o link já veio com o login embutido pelo Painel Admin
+        if (user && pass) {
+            liberarSinal(time);
         }
 
-        if (deviceId) {
-            var player = videojs('player-web', {
-                autoplay: true,
-                muted: false,
-                fluid: true,
-                sources: [{
-                    // Assumindo que o backend está no mesmo domínio
-                    src: '/stream/sbt-sp?deviceId=' + deviceId,
-                    type: 'application/x-mpegURL'
-                }]
-            });
+        function autenticarManual() {
+            const u = document.getElementById('iptv-user').value;
+            const p = document.getElementById('iptv-pass').value;
+            
+            if(usuariosValidos[u] && usuariosValidos[u].pass === p) {
+                liberarSinal(usuariosValidos[u].skin);
+            } else {
+                alert("Credenciais Inválidas ou Expiradas!");
+            }
+        }
+
+        function liberarSinal(skinNome) {
+            document.getElementById('box-login').style.display = 'none';
+            document.getElementById('player-header').style.display = 'block';
+            document.getElementById('player-wrapper').style.display = 'block';
+
+            const activeSkin = skins[skinNome] || skins['neutro'];
+            document.documentElement.style.setProperty('--cor-time', activeSkin.cor);
+            document.documentElement.style.setProperty('--bg-time', activeSkin.bg);
+            document.documentElement.style.setProperty('--borda-time', activeSkin.borda);
+            document.getElementById('titulo-time').innerText = activeSkin.nome + " • SINAL ATIVO";
+
+            // Inicializa o player HLS
+            videojs('player-web', { autoplay: true, muted: false, fluid: true });
         }
     </script>
 </body>
