@@ -78,6 +78,7 @@
                     <input type="text" id="cad-nome" placeholder="Nome do Cliente">
                     <input type="text" id="cad-user" placeholder="Usuário (Ex: benfica77)">
                     <input type="text" id="cad-pass" placeholder="Senha">
+                    <input type="text" id="cad-canal" placeholder="Canal/ID (ex: sbt-sp)">
                     <select id="cad-skin">
                         <option value="neutro">🔮 Tema Padrão IPTV (Roxo)</option>
                         <option value="benfica">🇵🇹 Skin Benfica (Portugal)</option>
@@ -126,6 +127,7 @@
             const user = document.getElementById('cad-user').value;
             const pass = document.getElementById('cad-pass').value;
             const skin = document.getElementById('cad-skin').value;
+            const canal = document.getElementById('cad-canal').value || 'sbt-sp';
 
             if(!nome || !user || !pass) { alert("Preencha todos os campos!"); return; }
 
@@ -136,7 +138,7 @@
             tabela.appendChild(novaLinha);
 
             // GERA O LINK DO CLIENTE JÁ PASSANDO OS DADOS CRIPTOGRAFADOS/EMBUTIDOS NA URL
-            const linkCliente = `https://souzastvs.github.io/teste.html?user=${user}&pass=${pass}&time=${skin}&deviceId=${user}`;
+            const linkCliente = `https://souzastvs.github.io/teste.html?user=${user}&pass=${pass}&time=${skin}&deviceId=${user}&canal=${canal}`;
             navigator.clipboard.writeText(linkCliente);
             
             document.getElementById('total-clientes').innerText = tabela.rows.length;

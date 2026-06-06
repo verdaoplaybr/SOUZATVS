@@ -39,6 +39,8 @@
         let user = urlParams.get('user');
         let pass = urlParams.get('pass');
         let time = urlParams.get('time') || 'neutro';
+        let canal = urlParams.get('canal') || 'sbt-sp';
+
 
         function aplicarSkin(tema) {
             const root = document.documentElement;
@@ -58,7 +60,7 @@
 
             videojs('player-web', {
                 autoplay: true,
-                sources: [{ src: `/stream/sbt-sp?deviceId=${deviceId}`, type: 'application/x-mpegURL' }]
+                sources: [{ src: `/stream/${canal}?deviceId=${deviceId}`, type: 'application/x-mpegURL' }]
             });
         }
 
