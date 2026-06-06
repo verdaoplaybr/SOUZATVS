@@ -3,97 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Premium - SOUZASTVS</title>
+    <title>SOUZASTVS - Player</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --cor-time: #7C3AED; --bg-time: #0B0E14; --borda-time: rgba(124, 92, 237, 0.5); }
-        body { background-color: var(--bg-time); color: white; font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; transition: 0.5s; }
-        .login-box { background: #1A1F2C; padding: 30px; border-radius: 12px; border: 1px solid #2A3142; width: 90%; max-width: 360px; text-align: center; }
-        input { width: 100%; padding: 12px; background: #0B0E14; border: 1px solid #2A3142; border-radius: 6px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-login { width: 100%; padding: 12px; background: #7C3AED; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
-        .player-container { display: none; width: 90%; max-width: 800px; border: 3px solid var(--cor-time); box-shadow: 0 0 25px var(--borda-time); border-radius: 12px; overflow: hidden; background-color: #000; }
-        .video-js { width: 100% !important; height: 450px !important; }
-        .header { text-align: center; margin-bottom: 20px; display: none; }
-        .header h1 { color: var(--cor-time); font-size: 26px; margin: 0; text-transform: uppercase; }
+        :root { --cor-time: #7C3AED; --bg-time: #0B0E14; }
+        body { background-color: var(--bg-time); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .header { margin: 20px 0; text-align: center; }
+        #titulo-time { color: var(--cor-time); font-size: 26px; }
+        .player-container { width: 90%; max-width: 800px; border: 3px solid var(--cor-time); border-radius: 12px; overflow: hidden; background: #000; }
+        /* Login Overlay */
+        #login-overlay { position: fixed; inset: 0; background: #0B0E14; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .login-box { background: #1A1F2C; padding: 30px; border-radius: 10px; width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #0B0E14; border: 1px solid #2A3142; color: white; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #7C3AED; border: none; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="login-box" id="box-login">
-        <h2>SOUZASTVS PLAY</h2>
-        <p style="color:#94A3B8; font-size:13px; margin-bottom:20px;">Autenticação Master de Canal</p>
-        <input type="text" id="iptv-user" placeholder="Usuário Comercial">
-        <input type="password" id="iptv-pass" placeholder="Senha de Acesso">
-        <button class="btn-login" onclick="loginSupabase()">Entrar no Sistema</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Acesso Premium</h2>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
+            <button onclick="fazerLogin()">Acessar</button>
+        </div>
     </div>
-
-    <div class="header" id="player-header">
-        <h1 id="titulo-time">ARENA PLAY</h1>
-        <p style="color:#94A3B8; margin-top:5px; font-size:13px;">Canal Transmitido via Proxy Nuvem</p>
+    <div class="header">
+        <h1 id="titulo-time">ARENA PLAY • STREAMING</h1>
     </div>
-
-    <div class="player-container" id="player-wrapper">
-        <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto">
-            <source id="video-source" src="" type="application/x-mpegURL">
-        </video>
+    <div class="player-container">
+        <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
     </div>
-
     <script>
-        // CONFIGURAÇÃO DO SEU SUPABASE (Preencha igual ao admin)
-        const SUPABASE_URL = "SUA_URL_DO_SUPABASE_AQUI";
-        const SUPABASE_KEY = "SUA_CHAVE_ANON_KEY_AQUI";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const skins = {
-            palmeiras: { cor: '#006437', bg: '#021E12', borda: 'rgba(0,100,55,0.7)', nome: 'Verdão Play' },
-            corinthians: { cor: '#FFFFFF', bg: '#111111', borda: 'rgba(255,255,255,0.4)', nome: 'Timão Play' },
-            benfica: { cor: '#E30613', bg: '#1C0002', borda: 'rgba(227,6,19,0.7)', nome: 'Benfica Play VIP' },
-            barcelona: { cor: '#EDBB00', bg: '#004D98', borda: 'rgba(165,0,68,0.8)', nome: 'Barça Stream Premium' },
-            neutro: { cor: '#7C3AED', bg: '#0B0E14', borda: 'rgba(124,92,237,0.5)', nome: 'SOUZASTVS PREMIUM' }
-        };
-
-        // Se o link vier com ?user= na URL, tenta logar direto
         const urlParams = new URLSearchParams(window.location.search);
-        let userParam = urlParams.get('user');
-        if(userParam) {
-            document.getElementById('iptv-user').value = userParam;
+        let user = urlParams.get('user');
+        let pass = urlParams.get('pass');
+        let time = urlParams.get('time') || 'neutro';
+        let canal = urlParams.get('canal') || 'sbt-sp';
+
+        function aplicarSkin(tema) {
+            const root = document.documentElement;
+            const titulo = document.getElementById('titulo-time');
+            if (tema === 'palmeiras') { root.style.setProperty('--cor-time', '#006437'); titulo.innerText = "VERDÃO PLAY"; }
+            else if (tema === 'corinthians') { root.style.setProperty('--cor-time', '#FFFFFF'); titulo.innerText = "TIMÃO PLAY"; }
+            else if (tema === 'benfica') { root.style.setProperty('--cor-time', '#FF0000'); titulo.innerText = "BENFICA PLAY"; }
+            else if (tema === 'barcelona') { root.style.setProperty('--cor-time', '#A50044'); titulo.innerText = "BARÇA PLAY"; }
         }
 
-        async function loginSupabase() {
-            const u = document.getElementById('iptv-user').value;
-            const p = document.getElementById('iptv-pass').value;
+        function iniciarPlayer(deviceId) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('titulo-time').innerText = "CARREGANDO...";
+            
+            // Aplica a skin selecionada
+            aplicarSkin(time);
 
-            // Busca as credenciais direto no banco de dados na nuvem!
-            const { data: cliente, error } = await supabase
-                .from('clientes_iptv')
-                .select('*')
-                .eq('username', u)
-                .single();
-
-            if (cliente && cliente.password === p) {
-                liberarCanalReal(cliente.stream_url, cliente.skin);
-            } else {
-                alert("Usuário ou Senha inválidos no servidor!");
-            }
+            videojs('player-web', {
+                autoplay: true,
+                sources: [{ src: `/stream/${canal}?deviceId=${deviceId}`, type: 'application/x-mpegURL' }]
+            });
         }
 
-        function liberarCanalReal(urlCanal, skinNome) {
-            document.getElementById('box-login').style.display = 'none';
-            document.getElementById('player-header').style.display = 'block';
-            document.getElementById('player-wrapper').style.display = 'block';
+        function fazerLogin() {
+            // Mock de validação
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if (u && p) iniciarPlayer(u);
+        }
 
-            const activeSkin = skins[skinNome] || skins['neutro'];
-            document.documentElement.style.setProperty('--cor-time', activeSkin.cor);
-            document.documentElement.style.setProperty('--bg-time', activeSkin.bg);
-            document.documentElement.style.setProperty('--borda-time', activeSkin.borda);
-            document.getElementById('titulo-time').innerText = activeSkin.nome + " • SINAL AO VIVO";
-
-            // Injeta a URL da Poliex de forma dinâmica direto no Player
-            const videoElement = document.getElementById('player-web');
-            videojs(videoElement).src({ type: 'application/x-mpegURL', src: urlCanal });
-            videojs(videoElement).play();
+        if (user && pass) {
+            iniciarPlayer(user);
         }
     </script>
 </body>

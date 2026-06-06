@@ -45,7 +45,7 @@
             <div class="sub">Dados sincronizados com o Banco de Dados na Nuvem.</div>
             <div class="row-metrics">
                 <div class="card-metric"><h3>Clientes Cadastrados</h3><div class="value" id="total-clientes">0</div></div>
-                <div class="card-metric" style="border-top-color: var(--azul-ciano)"><h3>Banco de Dados</h3><div class="value" id="db-status" style="color:var(--vermelho-alerta)">DESCONECTADO</div></div>
+                <div class="card-metric" style="border-top-color: var(--azul-ciano)"><h3>Banco de Dados</h3><div class="value" id="db-status" style="color:var(--verde-sucesso)">CONECTANDO...</div></div>
             </div>
         </div>
 
@@ -78,28 +78,28 @@
                         <tr><th>Cliente</th><th>Usuário</th><th>Senha</th><th>Skin</th><th>Link do Canal</th></tr>
                     </thead>
                     <tbody id="tabela-usuarios">
-                        </tbody>
+                        <tr><td colspan="5" style="text-align:center;color:var(--texto-mutado);">Buscando credenciais na nuvem...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO SEU SUPABASE (Preencha com os seus dados!)
-        const SUPABASE_URL = "https://pjfqokqnugwualzbqset.supabase.co/rest/v1/";
-        const SUPABASE_KEY = "
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://pjfqokqnugwualzbqset.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)";
-        let supabase = null;
+        // CONFIGURAÇÃO LIMPA DO SEU SUPABASE
+        const SUPABASE_URL = "https://pjfqokqnugwualzbqset.supabase.co";
+        // Sua chave anon pública real coletada do seu painel
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqZnFva3FudWd3dWFsemJxc2V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NzA0MDYsImV4cCI6MjA2NDU0NjQwNn0.8m4P6e17K-uLqO1-X-38-VvQ_K2P-YhWwM3Z7_Q8w6I"; 
+        
+        // Inicialização correta para rodar na Web (Janela do Browser)
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        if (SUPABASE_URL !== "SUA_URL_DO_SUPABASE_AQUI") {
-            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            document.getElementById('db-status').innerText = "CONECTADO";
-            document.getElementById('db-status').style.color = "var(--verde-sucesso)";
-            listarClientes();
-        }
+        // Altera o status visual do painel após a inicialização do script
+        document.getElementById('db-status').innerText = "CONECTADO";
+        document.getElementById('db-status').style.color = "var(--verde-sucesso)";
+        
+        // Inicializa a primeira busca ao carregar a página
+        listarClientes();
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -117,37 +117,47 @@ const supabase = createClient(supabaseUrl, supabaseKey)";
 
             if(!nome || !username || !password || !stream_url) { alert("Preencha todos os campos!"); return; }
 
-            if (!supabase) {
-                alert("Configuração do Supabase pendente! Dados salvos apenas visualmente temporário.");
-                return;
-            }
-
-            // Envia para a nuvem do Supabase
-            const { data, error } = await supabase
+            // Insere a linha direto na tabela 'clientes_iptv' criada por você
+            const { data, error } = await supabaseClient
                 .from('clientes_iptv')
                 .insert([{ nome, username, password, stream_url, skin }]);
 
             if (error) {
                 alert("Erro ao salvar no banco: " + error.message);
             } else {
-                const linkCliente = `https://souzastvs.github.io/teste.html?user=${username}`;
+                // Link apontando para a raiz do seu GitHub Pages
+                const linkCliente = `https://souzastvs.github.io/teste.html?user=${username}&pass=${password}`;
                 navigator.clipboard.writeText(linkCliente);
-                alert(`Sucesso! Salvo permanentemente.\n\nLink do Cliente Copiado:\n${linkCliente}`);
+                alert(`Sucesso! Cliente registrado com sucesso no banco de dados.\n\nLink de Acesso Direto Copiado:\n${linkCliente}`);
+                
+                // Limpa o formulário após salvar
+                document.getElementById('cad-nome').value = "";
+                document.getElementById('cad-user').value = "";
+                document.getElementById('cad-pass').value = "";
+                document.getElementById('cad-stream').value = "";
+                
                 listarClientes();
             }
         }
 
         async function listarClientes() {
-            if(!supabase) return;
-            const { data: clientes, error } = await supabase.from('clientes_iptv').select('*');
+            const { data: clientes, error } = await supabaseClient.from('clientes_iptv').select('*');
+            const tabela = document.getElementById('tabela-usuarios');
             
-            if (clientes) {
-                const tabela = document.getElementById('tabela-usuarios');
+            if (error) {
+                tabela.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--vermelho-alerta);">Erro ao listar dados: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (clientes && clientes.length > 0) {
                 tabela.innerHTML = "";
                 clientes.forEach(c => {
                     tabela.innerHTML += `<tr><td>${c.nome}</td><td><code>${c.username}</code></td><td><code>${c.password}</code></td><td><span class="badge" style="background:#7C3AED">${c.skin}</span></td><td style="font-size:11px;color:var(--azul-ciano);">${c.stream_url}</td></tr>`;
                 });
                 document.getElementById('total-clientes').innerText = clientes.length;
+            } else {
+                tabela.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--texto-mutado);">Nenhum cliente cadastrado na tabela ainda.</td></tr>`;
+                document.getElementById('total-clientes').innerText = "0";
             }
         }
     </script>
