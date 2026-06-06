@@ -1,0 +1,6 @@
+{
+  "name": "Verdão Play",
+  "description": "Uma plataforma de streaming organizada por emissoras, processando canais de forma segura no servidor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

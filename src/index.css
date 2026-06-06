@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --main-color: #006437;
+  --destaque-color: #C8AA2D;
+}
+
+.theme-palmeiras {
+  --main-color: #006437;
+  --destaque-color: #C8AA2D;
+}
+.theme-corinthians {
+  --main-color: #111111;
+  --destaque-color: #FFFFFF;
+}
+
+.bg-main { background-color: var(--main-color); }
+.text-main { color: var(--main-color); }
+.bg-destaque { background-color: var(--destaque-color); }
+.text-destaque { color: var(--destaque-color); }
+.border-main { border-color: var(--main-color); }
+.border-destaque { border-color: var(--destaque-color); }
