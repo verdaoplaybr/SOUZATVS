@@ -196,3 +196,36 @@
 
         // Função responsável por fazer a troca de telas limpa igual aos painéis oficiais
         function switchTab(tabId) {
+            // Esconde todos os conteúdos
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Remove a seleção visual dos botões do menu
+            document.querySelectorAll('.sidebar a').forEach(menu => menu.classList.remove('active'));
+            
+            // Mostra a tela clicada e marca o menu correspondente
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('menu-' + tabId).classList.add('active');
+        }
+
+        function gerarLinkGlobal() {
+            const time = document.getElementById('select-time').value;
+            const idAleatorio = "WEB_" + Math.floor(100000 + Math.random() * 900000);
+            
+            // Monta a URL apontando para o seu arquivo teste.html na raiz do seu GitHub Pages
+            const linkFinal = `https://souzastvs.github.io/teste.html?time=${time}&deviceId=${idAleatorio}`;
+            
+            navigator.clipboard.writeText(linkFinal);
+            totalTestes++;
+            document.getElementById('dash-testes').innerText = totalTestes;
+            
+            alert(`Link Temático Gerado com sucesso!\n\nSkin Selecionada: ${time.toUpperCase()}\n\nO link já foi copiado para a sua área de transferência. Cole no WhatsApp do cliente.`);
+        }
+
+        function dispararZap() {
+            const num = document.getElementById('numZap').value;
+            const linkApk = "https://souzastvs.github.io/arena.apk";
+            const msg = encodeURIComponent("Olá! Segue o link para descarregar o instalador oficial na sua TV Box ou Smart TV: " + linkApk);
+            window.open(`https://api.whatsapp.com/send?phone=${num}&text=${msg}`, '_blank');
+        }
+    </script>
+</body>
+</html>
