@@ -3,75 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUZASTVS - Player</title>
+    <title>SOUZASTVS - Play Premium</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --cor-time: #7C3AED; --bg-time: #0B0E14; }
-        body { background-color: var(--bg-time); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .header { margin: 20px 0; text-align: center; }
-        #titulo-time { color: var(--cor-time); font-size: 26px; }
-        .player-container { width: 90%; max-width: 800px; border: 3px solid var(--cor-time); border-radius: 12px; overflow: hidden; background: #000; }
-        /* Login Overlay */
-        #login-overlay { position: fixed; inset: 0; background: #0B0E14; display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .login-box { background: #1A1F2C; padding: 30px; border-radius: 10px; width: 300px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; background: #0B0E14; border: 1px solid #2A3142; color: white; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #7C3AED; border: none; color: white; border-radius: 5px; cursor: pointer; }
+        :root { --cor-time: #7C3AED; --bg-time: #0B0E14; --borda-time: rgba(124, 92, 237, 0.5); }
+        body { background-color: var(--bg-time); color: white; font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; transition: 0.5s; }
+        
+        /* BOX DE LOGIN SEGURO */
+        .login-box { background: #1A1F2C; padding: 30px; border-radius: 12px; border: 1px solid #2A3142; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box h2 { color: #7C3AED; margin-top: 0; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; background: #0B0E14; border: 1px solid #2A3142; border-radius: 6px; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-login { width: 100%; padding: 12px; background: #7C3AED; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
+
+        /* ÁREA DO PLAYER TRANSMISSÃO */
+        .player-container { display: none; width: 90%; max-width: 800px; border: 3px solid var(--cor-time); box-shadow: 0 0 25px var(--borda-time); border-radius: 12px; overflow: hidden; background-color: #000; }
+        .video-js { width: 100% !important; height: 450px !important; }
+        .header { text-align: center; margin-bottom: 20px; display: none; }
+        .header h1 { color: var(--cor-time); font-size: 26px; margin: 0; text-transform: uppercase; }
+        .loading { display: none; color: var(--cor-time); font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <div id="login-overlay">
-        <div class="login-box">
-            <h2>Acesso Premium</h2>
-            <input type="text" id="user" placeholder="Usuário">
-            <input type="password" id="pass" placeholder="Senha">
-            <button onclick="fazerLogin()">Acessar</button>
-        </div>
+
+    <div class="login-box" id="box-login">
+        <h2>SOUZASTVS PLAY</h2>
+        <p style="color:#94A3B8; font-size:13px; margin-bottom:20px;">Área de Login para Clientes e Testes</p>
+        <input type="text" id="iptv-user" placeholder="Seu Usuário">
+        <input type="password" id="iptv-pass" placeholder="Sua Senha">
+        <button class="btn-login" onclick="loginSistema()">Autenticar Acesso</button>
     </div>
-    <div class="header">
-        <h1 id="titulo-time">ARENA PLAY • STREAMING</h1>
+
+    <div class="loading" id="status-loading">Conectando ao servidor seguro...</div>
+
+    <div class="header" id="player-header">
+        <h1 id="titulo-time">SOUZASTVS PREMIUM</h1>
+        <p style="color:#94A3B8; margin-top:5px; font-size:13px;">Sinal Criptografado • Proibida retransmissão</p>
     </div>
-    <div class="player-container">
+
+    <div class="player-container" id="player-wrapper">
         <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
     </div>
+
     <script>
+        const SUPABASE_URL = "https://pjfqokqnugwualzbqset.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqZnFva3FudWd3dWFsemJxc2V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NzA0MDYsImV4cCI6MjA2NDU0NjQwNn0.8m4P6e17K-uLqO1-X-38-VvQ_K2P-YhWwM3Z7_Q8w6I";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const skins = {
+            palmeiras: { cor: '#006437', bg: '#021E12', borda: 'rgba(0,100,55,0.7)', nome: 'Verdão Play' },
+            corinthians: { cor: '#FFFFFF', bg: '#111111', borda: 'rgba(255,255,255,0.4)', nome: 'Timão Play' },
+            benfica: { cor: '#E30613', bg: '#1C0002', borda: 'rgba(227,6,19,0.7)', nome: 'Benfica Play VIP' },
+            barcelona: { cor: '#EDBB00', bg: '#004D98', borda: 'rgba(165,0,68,0.8)', nome: 'Barça Stream Premium' },
+            neutro: { cor: '#7C3AED', bg: '#0B0E14', borda: 'rgba(124,92,237,0.5)', nome: 'SOUZASTVS PREMIUM' }
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
-        let user = urlParams.get('user');
-        let pass = urlParams.get('pass');
-        let time = urlParams.get('time') || 'neutro';
-        let canal = urlParams.get('canal') || 'sbt-sp';
+        let userParam = urlParams.get('user');
+        let passParam = urlParams.get('pass');
 
-        function aplicarSkin(tema) {
+        if(userParam && passParam) {
+            document.getElementById('iptv-user').value = userParam;
+            document.getElementById('iptv-pass').value = passParam;
+            loginSistema();
+        }
+
+        async function loginSistema() {
+            const u = document.getElementById('iptv-user').value;
+            const p = document.getElementById('iptv-pass').value;
+
+            if(!u || !p) return;
+
+            document.getElementById('box-login').style.display = 'none';
+            document.getElementById('status-loading').style.display = 'block';
+
+            const { data: cliente, error } = await supabase
+                .from('clientes_iptv')
+                .select('*')
+                .eq('username', u)
+                .single();
+
+            if (cliente && cliente.password === p) {
+                aplicarTema(cliente.skin);
+                document.getElementById('status-loading').style.display = 'none';
+                document.getElementById('player-header').style.display = 'block';
+                document.getElementById('player-wrapper').style.display = 'block';
+
+                videojs('player-web', {
+                    autoplay: true,
+                    sources: [{ src: cliente.stream_url, type: 'application/x-mpegURL' }]
+                });
+            } else {
+                document.getElementById('box-login').style.display = 'block';
+                document.getElementById('status-loading').style.display = 'none';
+                alert("Credenciais inválidas!");
+            }
+        }
+
+        function aplicarTema(temaKey) {
+            const tema = skins[temaKey] || skins.neutro;
             const root = document.documentElement;
-            const titulo = document.getElementById('titulo-time');
-            if (tema === 'palmeiras') { root.style.setProperty('--cor-time', '#006437'); titulo.innerText = "VERDÃO PLAY"; }
-            else if (tema === 'corinthians') { root.style.setProperty('--cor-time', '#FFFFFF'); titulo.innerText = "TIMÃO PLAY"; }
-            else if (tema === 'benfica') { root.style.setProperty('--cor-time', '#FF0000'); titulo.innerText = "BENFICA PLAY"; }
-            else if (tema === 'barcelona') { root.style.setProperty('--cor-time', '#A50044'); titulo.innerText = "BARÇA PLAY"; }
-        }
-
-        function iniciarPlayer(deviceId) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('titulo-time').innerText = "CARREGANDO...";
-            
-            // Aplica a skin selecionada
-            aplicarSkin(time);
-
-            videojs('player-web', {
-                autoplay: true,
-                sources: [{ src: `/stream/${canal}?deviceId=${deviceId}`, type: 'application/x-mpegURL' }]
-            });
-        }
-
-        function fazerLogin() {
-            // Mock de validação
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            if (u && p) iniciarPlayer(u);
-        }
-
-        if (user && pass) {
-            iniciarPlayer(user);
+            root.style.setProperty('--cor-time', tema.cor);
+            root.style.setProperty('--bg-time', tema.bg);
+            root.style.setProperty('--borda-time', tema.borda);
+            document.getElementById('titulo-time').innerText = tema.nome;
         }
     </script>
 </body>

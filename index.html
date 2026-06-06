@@ -112,28 +112,26 @@
             const username = document.getElementById('cad-user').value;
             const password = document.getElementById('cad-pass').value;
             const skin = document.getElementById('cad-skin').value;
-            const stream_url = 'https://default-stream-url.com/stream.m3u8'; // Default stream URL
 
             if(!nome || !username || !password) { alert("Preencha todos os campos!"); return; }
 
-            // Insere a linha direto na tabela 'clientes_iptv' criada por você
+            // Insere no Supabase sem precisar expor a fonte
             const { data, error } = await supabaseClient
                 .from('clientes_iptv')
-                .insert([{ nome, username, password, stream_url, skin }]);
+                .insert([{ nome, username, password, skin }]);
 
             if (error) {
                 alert("Erro ao salvar no banco: " + error.message);
             } else {
-                // Link apontando para a raiz do seu GitHub Pages
+                // Gera o link simplificado que o cliente vai usar
                 const linkCliente = `https://souzastvs.github.io/teste.html?user=${username}&pass=${password}`;
                 navigator.clipboard.writeText(linkCliente);
-                alert(`Sucesso! Cliente registrado com sucesso no banco de dados.\n\nLink de Acesso Direto Copiado:\n${linkCliente}`);
+                alert(`Sucesso! Credencial ativa no servidor.\n\nLink enviado para a área de transferência:\n${linkCliente}`);
                 
-                // Limpa o formulário após salvar
+                // Limpa campos
                 document.getElementById('cad-nome').value = "";
                 document.getElementById('cad-user').value = "";
                 document.getElementById('cad-pass').value = "";
-                
                 listarClientes();
             }
         }
