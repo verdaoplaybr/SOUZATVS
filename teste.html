@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Play - Teste Ao Vivo</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <style>
+        body { background-color: #0B0E14; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .player-container { width: 90%; max-width: 800px; border: 2px solid #7C3AED; box-shadow: 0 0 20px rgba(124, 92, 237, 0.5); border-radius: 12px; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 20px; text-align: center;">
+        <h1 style="color: #7C3AED; margin:0;">ARENA PLAY • STREAMING</h1>
+        <p style="color: #94A3B8;">Aproveite o seu sinal de teste exclusivo</p>
+    </div>
+    <div class="player-container">
+        <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="800" height="450">
+            <source src="https://SUA-URL-DA-API-INTERMEDIARIA.com/stream/sbt-sp" type="application/x-mpegURL">
+        </video>
+    </div>
+    <script>
+        var player = videojs('player-web', { autoplay: true, muted: false, fluid: true });
+    </script>
+</body>
+</html>
