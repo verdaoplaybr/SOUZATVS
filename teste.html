@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena Play - Streaming</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    
+    <style>
+        :root {
+            --cor-time: #7C3AED;
+            --bg-time: #0B0E14;
+        }
+
+        body {
+            background-color: var(--bg-time);
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        .header { margin-bottom: 20px; text-align: center; }
+
+        .header h1 { 
+            color: var(--cor-time); 
+            font-size: 26px; 
+            margin: 0; 
+            letter-spacing: 2px; 
+            font-weight: bold;
+        }
+
+        .header p { color: #94A3B8; margin: 5px 0 0 0; font-size: 14px; }
+        
+        .player-container {
+            width: 90%;
+            max-width: 800px;
+            border: 3px solid var(--cor-time);
+            box-shadow: 0 0 25px var(--cor-time);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .video-js { width: 100% !important; height: 450px !important; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 id="titulo-time">ARENA PLAY • STREAMING</h1>
+        <p>Aproveite o seu sinal de teste exclusivo</p>
+    </div>
+
+    <div class="player-container">
+        <video id="player-web" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto">
+        </video>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const timeEscolhido = urlParams.get('time');
+        const deviceId = urlParams.get('deviceId');
+
+        const root = document.documentElement;
+        const titulo = document.getElementById('titulo-time');
+
+        if (timeEscolhido === 'palmeiras') {
+            root.style.setProperty('--cor-time', '#006437');
+            root.style.setProperty('--bg-time', '#021E12');
+            titulo.innerText = "VERDÃO PLAY • AO VIVO";
+        } 
+        else if (timeEscolhido === 'corinthians') {
+            root.style.setProperty('--cor-time', '#FFFFFF');
+            root.style.setProperty('--bg-time', '#111111');
+            titulo.innerText = "TIMÃO PLAY • AO VIVO";
+        }
+
+        if (deviceId) {
+            var player = videojs('player-web', {
+                autoplay: true,
+                muted: false,
+                fluid: true,
+                sources: [{
+                    // Assumindo que o backend está no mesmo domínio
+                    src: '/stream/sbt-sp?deviceId=' + deviceId,
+                    type: 'application/x-mpegURL'
+                }]
+            });
+        }
+    </script>
+</body>
+</html>
