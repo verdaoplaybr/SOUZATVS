@@ -136,7 +136,7 @@
             tabela.appendChild(novaLinha);
 
             // GERA O LINK DO CLIENTE JÁ PASSANDO OS DADOS CRIPTOGRAFADOS/EMBUTIDOS NA URL
-            const linkCliente = `https://souzastvs.github.io/teste.html?user=${user}&pass=${pass}&time=${skin}`;
+            const linkCliente = `https://souzastvs.github.io/teste.html?user=${user}&pass=${pass}&time=${skin}&deviceId=${user}`;
             navigator.clipboard.writeText(linkCliente);
             
             document.getElementById('total-clientes').innerText = tabela.rows.length;
