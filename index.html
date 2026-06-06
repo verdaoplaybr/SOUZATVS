@@ -12,219 +12,135 @@
             --roxo-hover: #6D28D9;
             --azul-ciano: #38BDF8;
             --verde-sucesso: #22C55E;
-            --vermelho-alerta: #EF4444;
             --texto-claro: #E2E8F0;
             --texto-mutado: #94A3B8;
             --borda-dividores: #2A3142;
         }
-
-        html, body {
-            background-color: var(--bg-principal);
-            color: var(--texto-claro);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* 🎛️ BARRA LATERAL ESTILO PAINEL IPTV */
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-cards);
-            border-right: 1px solid var(--borda-dividores);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 20px;
-            z-index: 10;
-        }
-
-        .sidebar .logo {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #FFF;
-            letter-spacing: 1px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--borda-dividores);
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            color: var(--texto-mutado);
-            text-decoration: none;
-            padding: 15px 25px;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar a:hover, .sidebar a.active {
-            color: #FFF;
-            background-color: rgba(124, 58, 237, 0.1);
-            border-left-color: var(--roxo-neon);
-        }
-
-        /* 🖥️ ÁREA DE CONTEÚDO EXPANSÍVEL */
-        .main-content {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-            background-color: var(--bg-principal);
-            box-sizing: border-box;
-        }
-
-        .tab-content {
-            display: none; /* Esconde todas as abas por padrão */
-        }
-
-        .tab-content.active {
-            display: block; /* Mostra apenas a aba ativa */
-        }
-
+        html, body { background-color: var(--bg-principal); color: var(--texto-claro); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; min-height: 100vh; }
+        
+        /* BARRA LATERAL */
+        .sidebar { width: 260px; background-color: var(--bg-cards); border-right: 1px solid var(--borda-dividores); position: fixed; top: 0; bottom: 0; display: flex; flex-direction: column; padding-top: 20px; z-index: 10; }
+        .sidebar .logo { text-align: center; font-size: 20px; font-weight: bold; color: #FFF; padding-bottom: 25px; border-bottom: 1px solid var(--borda-dividores); margin-bottom: 20px; }
+        .sidebar a { color: var(--texto-mutado); text-decoration: none; padding: 15px 25px; font-size: 15px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-left: 4px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { color: #FFF; background-color: rgba(124, 58, 237, 0.1); border-left-color: var(--roxo-neon); }
+        
+        /* CONTEÚDO */
+        .main-content { margin-left: 260px; flex: 1; padding: 40px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         h1 { font-size: 28px; margin-top: 0; color: #FFF; }
         .sub { color: var(--texto-mutado); margin-bottom: 30px; font-size: 14px; }
-
-        /* CARDS E FORMULÁRIOS */
+        
         .row-metrics { display: flex; gap: 20px; margin-bottom: 35px; }
         .card-metric { background-color: var(--bg-cards); border-radius: 8px; padding: 20px; flex: 1; border-top: 3px solid var(--roxo-neon); }
         .card-metric .value { font-size: 30px; font-weight: bold; margin-top: 8px; }
-
+        
         .secao-painel { background-color: var(--bg-cards); border-radius: 10px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--borda-dividores); }
-        .secao-painel h2 { margin-top: 0; font-size: 18px; margin-bottom: 20px; }
-
-        /* TABELAS */
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { color: var(--texto-mutado); font-size: 13px; padding: 12px; border-bottom: 2px solid var(--borda-dividores); text-transform: uppercase; }
+        .grid-formulario { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
+        th { color: var(--texto-mutated); font-size: 13px; padding: 12px; border-bottom: 2px solid var(--borda-dividores); text-transform: uppercase; }
         td { padding: 14px; border-bottom: 1px solid var(--borda-dividores); font-size: 14px; }
-
-        /* INPUTS E BOTÕES */
-        input, select { width: 100%; padding: 12px; background-color: var(--bg-principal); border: 1px solid var(--borda-dividores); border-radius: 6px; color: #FFF; margin-bottom: 15px; box-sizing: border-box; }
+        
+        input, select { width: 100%; padding: 12px; background-color: var(--bg-principal); border: 1px solid var(--borda-dividores); border-radius: 6px; color: #FFF; box-sizing: border-box; }
         .btn-acao { background-color: var(--roxo-neon); color: #FFF; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
         .btn-acao:hover { background-color: var(--roxo-hover); }
-
-        .badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge-benfica { background-color: #E30613; color: #FFF; }
-        .badge-barca { background-color: #004D98; color: #EDBB00; }
-        .badge-verdao { background-color: #006437; color: #FFF; }
+        
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo">🚀 SOUZASTVS CLUB</div>
+        <div class="logo">🚀 SOUZASTVS PANEL</div>
         <a onclick="switchTab('dash')" id="menu-dash" class="active">📊 Dashboard</a>
-        <a onclick="switchTab('clientes')" id="menu-clientes">👥 Gerenciar Clientes</a>
-        <a onclick="switchTab('testes')" id="menu-testes">🔗 Testes Rápidos Web</a>
-        <a onclick="switchTab('disseminacao')" id="menu-disseminacao">📲 Envio e Downloads</a>
+        <a onclick="switchTab('clientes')" id="menu-clientes">👥 Autorizações e Clientes</a>
+        <a onclick="switchTab('disseminacao')" id="menu-disseminacao">📲 Links e APK</a>
     </div>
 
     <div class="main-content">
-
         <div id="dash" class="tab-content active">
             <h1>Painel de Controle Geral</h1>
-            <div class="sub">Visão geral da sua infraestrutura e conexões ativas.</div>
+            <div class="sub">Visão geral e monitoramento de credenciais ativas.</div>
             <div class="row-metrics">
-                <div class="card-metric"><h3>Conexões Ativas</h3><div class="value">142</div></div>
-                <div class="card-metric" style="border-top-color: var(--azul-ciano)"><h3>Testes Gerados Hoje</h3><div class="value" id="dash-testes">0</div></div>
-                <div class="card-metric" style="border-top-color: var(--verde-sucesso)"><h3>Status do Servidor</h3><div class="value" style="color: var(--verde-sucesso)">ONLINE</div></div>
+                <div class="card-metric"><h3>Clientes na Base</h3><div class="value" id="total-clientes">3</div></div>
+                <div class="card-metric" style="border-top-color: var(--azul-ciano)"><h3>Servidor Central</h3><div class="value" style="color:var(--verde-sucesso)">PROTEGIDO</div></div>
             </div>
         </div>
 
         <div id="clientes" class="tab-content">
-            <h1>Lista Master de Clientes</h1>
-            <div class="sub">Ative, expire ou mude a skin das caixinhas remotamente.</div>
+            <h1>Autorizações e Credenciais</h1>
+            <div class="sub">Crie logins e defina travas de cenário antes de enviar ao cliente.</div>
+            
             <div class="secao-painel">
-                <h2>Controle de Dispositivos</h2>
+                <h2 style="margin-top:0;">🔑 Gerar Nova Credencial Master</h2>
+                <div class="grid-formulario">
+                    <input type="text" id="cad-nome" placeholder="Nome do Cliente">
+                    <input type="text" id="cad-user" placeholder="Usuário (Ex: benfica77)">
+                    <input type="text" id="cad-pass" placeholder="Senha">
+                    <select id="cad-skin">
+                        <option value="neutro">🔮 Tema Padrão IPTV (Roxo)</option>
+                        <option value="benfica">🇵🇹 Skin Benfica (Portugal)</option>
+                        <option value="barcelona">🇪🇸 Skin Barcelona (Espanha)</option>
+                        <option value="palmeiras">🇧🇷 Skin Palmeiras (Brasil)</option>
+                        <option value="corinthians">🇧🇷 Skin Corinthians (Brasil)</option>
+                    </select>
+                </div>
+                <button class="btn-acao" onclick="adicionarCliente()">Salvar Credencial e Copiar Link</button>
+            </div>
+
+            <div class="secao-painel">
+                <h2>Controle Remoto de Usuários</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Device ID</th>
-                            <th>Skin Ativa</th>
-                            <th>País</th>
-                            <th>Status</th>
-                        </tr>
+                        <tr><th>Cliente</th><th>Usuário</th><th>Senha</th><th>Skin Fixada</th><th>Status</th></tr>
                     </thead>
-                    <tbody>
-                        <tr><td>João Pereira</td><td><code>BOX_LISBOA_88</code></td><td><span class="badge badge-benfica">Benfica Play</span></td><td>🇵🇹 Portugal</td><td style="color:var(--verde-sucesso)">Ativo</td></tr>
-                        <tr><td>Carlos Barça</td><td><code>BOX_SPAIN_12</code></td><td><span class="badge badge-barca">Barça VIP</span></td><td>🇪🇸 Espanha</td><td style="color:var(--verde-sucesso)">Ativo</td></tr>
-                        <tr><td>Marcos Verdão</td><td><code>BOX_TESTE_VERDAO</code></td><td><span class="badge badge-verdao">Verdão Play</span></td><td>🇧🇷 Brasil</td><td style="color:var(--azul-ciano)">Teste</td></tr>
+                    <tbody id="tabela-usuarios">
+                        <tr><td>João Pereira</td><td><code>lisboa88</code></td><td><code>123</code></td><td><span class="badge" style="background:#E30613">Benfica</span></td><td style="color:var(--verde-sucesso)">Ativo</td></tr>
+                        <tr><td>Carlos Silva</td><td><code>barca10</code></td><td><code>456</code></td><td><span class="badge" style="background:#004D98">Barcelona</span></td><td style="color:var(--verde-sucesso)">Ativo</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div id="testes" class="tab-content">
-            <h1>Gerador de Testes Sem Download</h1>
-            <div class="sub">Crie links instantâneos para rodar direto no Google Chrome do celular ou PC.</div>
-            <div class="secao-painel" style="max-width: 500px;">
-                <h2>Configurar Teste Exclusivo</h2>
-                <label>Escolha a Skin Temática do Cliente:</label>
-                <select id="select-time">
-                    <option value="benfica">🇵🇹 Benfica Play (Portugal)</option>
-                    <option value="barcelona">🇪🇸 Barça Stream Premium (Espanha)</option>
-                    <option value="palmeiras">🇧🇷 Verdão Play (Brasil)</option>
-                    <option value="corinthians">🇧🇷 Timão Play (Brasil)</option>
-                    <option value="neutro">🔮 Arena Play (Neutro/Roxo)</option>
-                </select>
-                <button class="btn-acao" style="background-color: var(--azul-ciano); color: #000;" onclick="gerarLinkGlobal()">Gerar e Copiar Link de Degustação</button>
-            </div>
-        </div>
-
         <div id="disseminacao" class="tab-content">
-            <h1>Central de Disseminação</h1>
-            <div class="sub">Envio de aplicativos e disparos diretos de cobrança e acessos.</div>
-            <div class="secao-painel" style="max-width: 500px;">
-                <h2>Disparar APK via WhatsApp</h2>
-                <input type="text" id="numZap" placeholder="Ex: 5511949988411">
-                <button class="btn-acao" style="background-color: var(--verde-sucesso);" onclick="dispararZap()">Disparar para o Cliente</button>
+            <h1>Downloads Disponíveis</h1>
+            <div class="sub">Links diretos dos arquivos prontos para a TV Box.</div>
+            <div class="secao-painel" style="max-width:400px;">
+                <h2>Link Direto do APK</h2>
+                <input type="text" readonly value="https://souzastvs.github.io/arena.apk">
             </div>
         </div>
-
     </div>
 
     <script>
-        let totalTestes = 0;
-
-        // Função responsável por fazer a troca de telas limpa igual aos painéis oficiais
         function switchTab(tabId) {
-            // Esconde todos os conteúdos
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Remove a seleção visual dos botões do menu
             document.querySelectorAll('.sidebar a').forEach(menu => menu.classList.remove('active'));
-            
-            // Mostra a tela clicada e marca o menu correspondente
             document.getElementById(tabId).classList.add('active');
             document.getElementById('menu-' + tabId).classList.add('active');
         }
 
-        function gerarLinkGlobal() {
-            const time = document.getElementById('select-time').value;
-            const idAleatorio = "WEB_" + Math.floor(100000 + Math.random() * 900000);
-            
-            // Monta a URL apontando para o seu arquivo teste.html na raiz do seu GitHub Pages
-            const linkFinal = `https://souzastvs.github.io/teste.html?time=${time}&deviceId=${idAleatorio}`;
-            
-            navigator.clipboard.writeText(linkFinal);
-            totalTestes++;
-            document.getElementById('dash-testes').innerText = totalTestes;
-            
-            alert(`Link Temático Gerado com sucesso!\n\nSkin Selecionada: ${time.toUpperCase()}\n\nO link já foi copiado para a sua área de transferência. Cole no WhatsApp do cliente.`);
-        }
+        function adicionarCliente() {
+            const nome = document.getElementById('cad-nome').value;
+            const user = document.getElementById('cad-user').value;
+            const pass = document.getElementById('cad-pass').value;
+            const skin = document.getElementById('cad-skin').value;
 
-        function dispararZap() {
-            const num = document.getElementById('numZap').value;
-            const linkApk = "https://souzastvs.github.io/arena.apk";
-            const msg = encodeURIComponent("Olá! Segue o link para descarregar o instalador oficial na sua TV Box ou Smart TV: " + linkApk);
-            window.open(`https://api.whatsapp.com/send?phone=${num}&text=${msg}`, '_blank');
+            if(!nome || !user || !pass) { alert("Preencha todos os campos!"); return; }
+
+            // Adiciona na tabela visual
+            const tabela = document.getElementById('tabela-usuarios');
+            const novaLinha = document.createElement('tr');
+            novaLinha.innerHTML = `<td>${nome}</td><td><code>${user}</code></td><td><code>${pass}</code></td><td><span class="badge" style="background-color: var(--roxo-neon)">${skin}</span></td><td style="color:var(--verde-sucesso)">Ativo</td>`;
+            tabela.appendChild(novaLinha);
+
+            // GERA O LINK DO CLIENTE JÁ PASSANDO OS DADOS CRIPTOGRAFADOS/EMBUTIDOS NA URL
+            const linkCliente = `https://souzastvs.github.io/teste.html?user=${user}&pass=${pass}&time=${skin}&deviceId=${user}`;
+            navigator.clipboard.writeText(linkCliente);
+            
+            document.getElementById('total-clientes').innerText = tabela.rows.length;
+            alert(`Usuário Ativado!\n\nLink Direto Gerado (Copiado):\n${linkCliente}`);
         }
     </script>
 </body>
