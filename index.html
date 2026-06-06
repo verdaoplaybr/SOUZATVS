@@ -86,8 +86,12 @@
 
     <script>
         // CONFIGURAÇÃO DO SEU SUPABASE (Preencha com os seus dados!)
-        const SUPABASE_URL = "SUA_URL_DO_SUPABASE_AQUI";
-        const SUPABASE_KEY = "SUA_CHAVE_ANON_KEY_AQUI";
+        const SUPABASE_URL = "https://pjfqokqnugwualzbqset.supabase.co/rest/v1/";
+        const SUPABASE_KEY = "
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://pjfqokqnugwualzbqset.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)";
         let supabase = null;
 
         if (SUPABASE_URL !== "SUA_URL_DO_SUPABASE_AQUI") {
